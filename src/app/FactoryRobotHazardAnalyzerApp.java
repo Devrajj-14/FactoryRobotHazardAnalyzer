@@ -21,33 +21,43 @@ public class FactoryRobotHazardAnalyzerApp {
         System.out.println("        FACTORY ROBOT HAZARD ANALYZER   ");
         System.out.println("========================================");
 
-        try {
-            String precisionRaw = input.readString(sc, "Enter Arm Precision (0-100 %): ");
-            String densityRaw = input.readString(sc, "Enter Worker Density (0-200 per 100 m^2): ");
-            String stateRaw = input.readString(sc, "Enter Machinery State (NORMAL / MAINTENANCE_DUE / CRITICAL_FAULT): ");
+        boolean run = true;
 
-            double precision = Double.parseDouble(precisionRaw.trim());
-            double density = Double.parseDouble(densityRaw.trim());
-            MachineryState state = MachineryState.fromUserInput(stateRaw);
+        while (run) {
+            try {
+                String precisionRaw = input.readString(sc, "Enter Arm Precision (0-100 %): ");
+                String densityRaw = input.readString(sc, "Enter Worker Density (0-200 per 100 m^2): ");
+                String stateRaw = input.readString(sc, "Enter Machinery State (NORMAL / MAINTENANCE_DUE / CRITICAL_FAULT): ");
 
-            RobotScenario scenario = new RobotScenario(precision, density, state);
-            validator.validate(scenario);
+                double precision = Double.parseDouble(precisionRaw.trim());
+                double density = Double.parseDouble(densityRaw.trim());
+                MachineryState state = MachineryState.fromUserInput(stateRaw);
 
-            double score = calculator.calculateScore(scenario);
-            RiskLevel level = RiskLevel.fromScore(score);
+                RobotScenario scenario = new RobotScenario(precision, density, state);
+                validator.validate(scenario);
+
+                double score = calculator.calculateScore(scenario);
+                RiskLevel level = RiskLevel.fromScore(score);
+
+                System.out.println();
+                System.out.println("Analysis Result (UC7)");
+                System.out.printf("Hazard Risk Score: %.2f / 100%n", score);
+                System.out.println("Risk Level: " + level);
+
+            } catch (NumberFormatException e) {
+                System.out.println();
+                System.out.println("Invalid Number: Enter numeric values for precision and density.");
+            } catch (InvalidScenarioException e) {
+                System.out.println();
+                System.out.println("Invalid Scenario: " + e.getMessage());
+            }
 
             System.out.println();
-            System.out.println("Analysis Result (UC6)");
-            System.out.printf("Hazard Risk Score: %.2f / 100%n", score);
-            System.out.println("Risk Level: " + level);
-        } catch (NumberFormatException e) {
+            run = input.readYesNo(sc, "Analyze another scenario? (Y/N): ");
             System.out.println();
-            System.out.println("Invalid Number: Enter numeric values for precision and density.");
-        } catch (InvalidScenarioException e) {
-            System.out.println();
-            System.out.println("Invalid Scenario: " + e.getMessage());
-        } finally {
-            sc.close();
         }
+
+        System.out.println("Exiting Factory Robot Hazard Analyzer.");
+        sc.close();
     }
 }
