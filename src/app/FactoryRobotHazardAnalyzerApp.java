@@ -1,6 +1,9 @@
 package app;
 
+import domain.MachineryState;
+import domain.RobotScenario;
 import util.ConsoleInput;
+
 import java.util.Scanner;
 
 public class FactoryRobotHazardAnalyzerApp {
@@ -16,11 +19,17 @@ public class FactoryRobotHazardAnalyzerApp {
         String densityRaw = input.readString(sc, "Enter Worker Density (0-200 per 100 m^2): ");
         String stateRaw = input.readString(sc, "Enter Machinery State (NORMAL / MAINTENANCE_DUE / CRITICAL_FAULT): ");
 
+        double precision = Double.parseDouble(precisionRaw.trim());
+        double density = Double.parseDouble(densityRaw.trim());
+        MachineryState state = MachineryState.fromUserInput(stateRaw);
+
+        RobotScenario scenario = new RobotScenario(precision, density, state);
+
         System.out.println();
-        System.out.println("Captured Inputs (UC2):");
-        System.out.println("Arm Precision: " + precisionRaw);
-        System.out.println("Worker Density: " + densityRaw);
-        System.out.println("Machinery State: " + stateRaw);
+        System.out.println("Scenario Built (UC3):");
+        System.out.println("Precision: " + scenario.getArmPrecisionPercent());
+        System.out.println("Density: " + scenario.getWorkerDensityPer100m2());
+        System.out.println("State: " + scenario.getMachineryState());
 
         sc.close();
     }
