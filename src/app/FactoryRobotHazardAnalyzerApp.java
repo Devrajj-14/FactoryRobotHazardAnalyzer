@@ -1,6 +1,7 @@
 package app;
 
 import domain.MachineryState;
+import domain.RiskLevel;
 import domain.RobotScenario;
 import exception.InvalidScenarioException;
 import service.HazardCalculator;
@@ -33,9 +34,12 @@ public class FactoryRobotHazardAnalyzerApp {
             validator.validate(scenario);
 
             double score = calculator.calculateScore(scenario);
+            RiskLevel level = RiskLevel.fromScore(score);
 
             System.out.println();
-            System.out.printf("Hazard Risk Score (UC5): %.2f / 100%n", score);
+            System.out.println("Analysis Result (UC6)");
+            System.out.printf("Hazard Risk Score: %.2f / 100%n", score);
+            System.out.println("Risk Level: " + level);
         } catch (NumberFormatException e) {
             System.out.println();
             System.out.println("Invalid Number: Enter numeric values for precision and density.");
