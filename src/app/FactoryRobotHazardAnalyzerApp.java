@@ -3,6 +3,7 @@ package app;
 import domain.MachineryState;
 import domain.RobotScenario;
 import exception.InvalidScenarioException;
+import service.HazardCalculator;
 import service.ScenarioValidator;
 import util.ConsoleInput;
 
@@ -13,6 +14,7 @@ public class FactoryRobotHazardAnalyzerApp {
         Scanner sc = new Scanner(System.in);
         ConsoleInput input = new ConsoleInput();
         ScenarioValidator validator = new ScenarioValidator();
+        HazardCalculator calculator = new HazardCalculator();
 
         System.out.println("========================================");
         System.out.println("        FACTORY ROBOT HAZARD ANALYZER   ");
@@ -30,8 +32,10 @@ public class FactoryRobotHazardAnalyzerApp {
             RobotScenario scenario = new RobotScenario(precision, density, state);
             validator.validate(scenario);
 
+            double score = calculator.calculateScore(scenario);
+
             System.out.println();
-            System.out.println("Scenario is valid. (UC4)");
+            System.out.printf("Hazard Risk Score (UC5): %.2f / 100%n", score);
         } catch (NumberFormatException e) {
             System.out.println();
             System.out.println("Invalid Number: Enter numeric values for precision and density.");
