@@ -11,9 +11,11 @@ import util.ConsoleInput;
 import java.util.Scanner;
 
 public class FactoryRobotHazardAnalyzerApp {
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         ConsoleInput input = new ConsoleInput();
+
         ScenarioValidator validator = new ScenarioValidator();
         HazardCalculator calculator = new HazardCalculator();
 
@@ -25,28 +27,26 @@ public class FactoryRobotHazardAnalyzerApp {
 
         while (run) {
             try {
-                String precisionRaw = input.readString(sc, "Enter Arm Precision (0-100 %): ");
-                String densityRaw = input.readString(sc, "Enter Worker Density (0-200 per 100 m^2): ");
+                double precision = input.readDouble(sc, "Enter Arm Precision (0-100 %): ");
+                double density = input.readDouble(sc, "Enter Worker Density (0-200 per 100 m^2): ");
                 String stateRaw = input.readString(sc, "Enter Machinery State (NORMAL / MAINTENANCE_DUE / CRITICAL_FAULT): ");
 
-                double precision = Double.parseDouble(precisionRaw.trim());
-                double density = Double.parseDouble(densityRaw.trim());
                 MachineryState state = MachineryState.fromUserInput(stateRaw);
-
                 RobotScenario scenario = new RobotScenario(precision, density, state);
+
                 validator.validate(scenario);
 
                 double score = calculator.calculateScore(scenario);
                 RiskLevel level = RiskLevel.fromScore(score);
 
                 System.out.println();
-                System.out.println("Analysis Result (UC7)");
+                System.out.println("Analysis Result");
+                System.out.println("----------------------------------------");
                 System.out.printf("Hazard Risk Score: %.2f / 100%n", score);
                 System.out.println("Risk Level: " + level);
+                System.out.println("Recommendation: " + recommendation(level));
+                System.out.println("----------------------------------------");
 
-            } catch (NumberFormatException e) {
-                System.out.println();
-                System.out.println("Invalid Number: Enter numeric values for precision and density.");
             } catch (InvalidScenarioException e) {
                 System.out.println();
                 System.out.println("Invalid Scenario: " + e.getMessage());
@@ -59,5 +59,22 @@ public class FactoryRobotHazardAnalyzerApp {
 
         System.out.println("Exiting Factory Robot Hazard Analyzer.");
         sc.close();
+    }
+
+    private static String recommendation(RiskLevel level) {
+        if (level == null) return "Monitor system.";
+
+        switch (level) {
+            case LOW:
+                return "Continue monitoring and follow standard safety checks.";
+            case MODERATE:
+                return "Increase supervision and run additional safety verification.";
+            case HIGH:
+                return "Restrict operation and schedule inspection immediately.";
+            case CRITICAL:
+                return "Stop operation now and perform emergency maintenance.";
+            default:
+                return "Monitor system.";
+        }
     }
 }

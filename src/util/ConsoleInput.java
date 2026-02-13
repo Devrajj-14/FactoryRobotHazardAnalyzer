@@ -9,6 +9,18 @@ public class ConsoleInput {
         return sc.nextLine();
     }
 
+    public double readDouble(Scanner sc, String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String raw = sc.nextLine();
+            try {
+                return Double.parseDouble(raw.trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid number. Enter a valid numeric value.");
+            }
+        }
+    }
+
     public boolean readYesNo(Scanner sc, String prompt) {
         while (true) {
             System.out.print(prompt);
